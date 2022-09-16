@@ -1,19 +1,19 @@
-from view import UserInterface
+from view import user_interface
 from text_logger import text_logger
 from handler import JsonHandler, XMLHandler
 from contact_book import contact_book
 
-class Controller:
+
+class controller:
     _Book = None
     _UI = None
     _Logger = None
     _JsonHandler = None
     _XMLHandler = None
 
-
     def __init__(self):
         self._Book = contact_book()
-        self._UI = UserInterface()
+        self._UI = user_interface()
         self._Logger = text_logger()
         self._JsonHandler = JsonHandler()
         self._XMLHandler = XMLHandler()
@@ -21,7 +21,7 @@ class Controller:
     def load_saved_data(self):
         self._Logger.INFO('*Загрузка сохраненных данных*')
         self.import_contacts('xml')
-        #self.import_contacts('json')
+        # self.import_contacts('json')
 
     def load_menu(self):
         return self._UI.load_menu_text()
@@ -61,7 +61,7 @@ class Controller:
         else:
             self._Logger.WARNING(f'Контакт с фамилией: {surname} не найден')
             return f'Контакт с фамилией: {surname} не найден'
-    
+
     def check_search_result(self, result):
         if result == [] or result == None:
             return False
@@ -92,7 +92,8 @@ class Controller:
             self.export_contacts_to_xml(self._Book.get_unsorted())
             self._Logger.INFO("Данные в XML хранилище экспортированы")
         else:
-            self._Logger.ERROR("Некорректный тип хранилища данных для экспорта")
+            self._Logger.ERROR(
+                "Некорректный тип хранилища данных для экспорта")
         return f"Контакты в хранилище успешно экспортированы"
 
     def export_contacts_to_json(self, contacts):

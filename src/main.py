@@ -1,5 +1,5 @@
-from bot import Bot
+from bot import bot
 
 token = ""
-_Bot = Bot(token)
+_Bot = bot(token)
 _Bot.run()
