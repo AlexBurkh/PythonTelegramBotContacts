@@ -1,6 +1,6 @@
-from View import UserInterface
+from view import UserInterface
 from text_logger import text_logger
-from Handler import JsonHandler, XMLHandler
+from handler import JsonHandler, XMLHandler
 from contact_book import contact_book
 
 class Controller:
