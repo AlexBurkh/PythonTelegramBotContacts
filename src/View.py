@@ -1,9 +1,4 @@
-from Console import Console
-
-
-class UserInterface:
-    con = Console()
-
+class user_interface:
     def load_menu_text(self):
 
         answer  = 'Телефонная книга\n================\n'

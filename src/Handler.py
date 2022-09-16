@@ -1,11 +1,7 @@
 from contact import contact
-from contact_book import contact_book
 import json
 import xml.etree.ElementTree as ET
 import os.path
-
-from abc import ABC, abstractmethod
-
 
 def create_contact_by_dictionary(item):
     cont = contact(int(item['id']), item['name'], item['patronymic'], item['surname'], item['number'])
