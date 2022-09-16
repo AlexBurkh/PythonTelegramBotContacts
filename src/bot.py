@@ -31,7 +31,7 @@ class bot():
 
     async def edit(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         msg = update.message.text.split()
-        answer = self._control.edit_contact(msg[1])
+        answer = self._control.edit_contact(msg[1:])
         await update.message.reply_text(answer)
 
     async def delete(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -65,8 +65,8 @@ class bot():
         self.__app.add_handler(CommandHandler("menu", self.menu))
         self.__app.add_handler(CommandHandler("add", self.add))
         self.__app.add_handler(CommandHandler("print", self.print))
-        self.__app.add_handler(CommandHandler("delete", self.delete))
         self.__app.add_handler(CommandHandler("edit", self.edit))
+        self.__app.add_handler(CommandHandler("delete", self.delete))
         self.__app.add_handler(CommandHandler(
             "search_by_id", self.search_by_id))
         self.__app.add_handler(CommandHandler(

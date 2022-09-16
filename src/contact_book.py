@@ -20,6 +20,8 @@ class contact_book:
             self.__contacts.append(
                 contact(self.__next_id, name, patronymic, surname, number))
             self.__next_id += 1
+            return True
+        return False
 
     def _import_contact(self, n_id: str,
                         name: str,
@@ -55,15 +57,11 @@ class contact_book:
                     result.append(item)
         return result
 
-    def edit_contact(self, id: int,
-                     name: str = None,
-                     patronymic: str = None,
-                     surname: str = None,
-                     number: str = None):
+    def edit_contact(self, id: int, number: str = None):
         search_result = self.get_by_id(id)
         if len(search_result) > 0:
             item = search_result[0]
-            item.edit(name, patronymic, surname, number)
+            item.edit(number)
             return True
         return False
 

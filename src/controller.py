@@ -1,6 +1,6 @@
 from view import user_interface
 from text_logger import text_logger
-from handler import _json_handler, _xml_handler
+from handler import json_handler, xml_handler
 from contact_book import contact_book
 
 
@@ -15,8 +15,8 @@ class controller:
         self._book = contact_book()
         self._UI = user_interface()
         self._logger = text_logger()
-        self._json_handler = _json_handler()
-        self._xml_handler = _xml_handler()
+        self._json_handler = json_handler()
+        self._xml_handler = xml_handler()
 
     def load_saved_data(self):
         self._logger.INFO('*Загрузка сохраненных данных*')
@@ -31,28 +31,37 @@ class controller:
         return self._UI.load_contacts_text_with_header(contacts)
 
     def add_contact(self, name, patronymic, surname, number):
-        self._book.add_contact(name, patronymic, surname, number)
-        answer = f'Добавлен контакт: {name} {patronymic} {surname} {number}'
+        status = self._book.add_contact(name, patronymic, surname, number)
+        answer = self._UI.load_contact_added_text(
+            status, name, patronymic, surname, number)
         self._logger.INFO(answer)
         return answer
 
     def delete_contact(self, id):
         result = self._book.delete_contact(int(id))
+        res_text = self._UI.load_contact_deleted_text(result, id)
         if result:
-            self._logger.INFO(f'Контакт с id: {id} удален')
-            return f'Готово! Контакт с id: {id} удален'
+            self._logger.INFO(res_text)
         else:
-            self._logger.WARNING(f'Ошибка при удалении контакта по id: {id}')
-            return f'Ошибка при удалении контакта по id: {id}'
+            self._logger.WARNING(res_text)
+        return res_text
 
-    def edit_contact(self, id):
-        id = int(id)
-        if self._book
+    def edit_contact(self, msg):
+        status = False
+        if len(msg) == 2:
+            id = -1
+            try:
+                id = int(msg[0])
+                number = msg[1]
+                status = self._book.edit_contact(id, number)
+            except:
+                pass
+        return self._UI.load_contact_edited_text(status)
 
     def search_by_id(self, id):
         id = int(id)
         result = self._book.get_by_id(id)
-        if (self.check_search_result(result)):
+        if self.check_search_result(result):
             return self._UI.load_contact_text(result[0])
         else:
             self._logger.WARNING(f'Контакт с id: {id} не найден')
@@ -98,7 +107,7 @@ class controller:
         else:
             self._logger.ERROR(
                 "Некорректный тип хранилища данных для экспорта")
-        return f"Контакты в хранилище успешно экспортированы"
+        return f"Контакты в {type} хранилище успешно экспортированы"
 
     def export_contacts_to_json(self, contacts):
         return self._json_handler.save(contacts)

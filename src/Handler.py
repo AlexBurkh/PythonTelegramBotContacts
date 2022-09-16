@@ -30,7 +30,7 @@ class json_handler():
         json.dump(data, file)
         file.close()
 
-    def get_dict(item):
+    def get_dict(self, item):
         item = item
         dict = {'id': item.id,
                 'name': item.name,
