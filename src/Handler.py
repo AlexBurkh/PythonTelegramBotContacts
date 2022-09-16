@@ -3,12 +3,14 @@ import json
 import xml.etree.ElementTree as ET
 import os.path
 
+
 def create_contact_by_dictionary(item):
-    cont = contact(int(item['id']), item['name'], item['patronymic'], item['surname'], item['number'])
+    cont = contact(int(item['id']), item['name'],
+                   item['patronymic'], item['surname'], item['number'])
     return cont
 
 
-class JsonHandler():
+class json_handler():
     def load(self):
         book = []
         file_paths = 'data\\database.json'
@@ -23,7 +25,7 @@ class JsonHandler():
     def save(self, contact_list):
         data = []
         for item in contact_list:
-            data.append(JsonHandler.get_dict(item))
+            data.append(self.get_dict(item))
         file = open('data\\database.json', 'w')
         json.dump(data, file)
         file.close()
@@ -39,7 +41,7 @@ class JsonHandler():
         return dict
 
 
-class XMLHandler():
+class xml_handler():
     def load(self):
         book = []
         file_paths = 'data\\database.xml'

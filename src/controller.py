@@ -1,25 +1,25 @@
 from view import user_interface
 from text_logger import text_logger
-from handler import JsonHandler, XMLHandler
+from handler import _json_handler, _xml_handler
 from contact_book import contact_book
 
 
 class controller:
-    _Book = None
+    _book = None
     _UI = None
-    _Logger = None
-    _JsonHandler = None
-    _XMLHandler = None
+    _logger = None
+    _json_handler = None
+    _xml_handler = None
 
     def __init__(self):
-        self._Book = contact_book()
+        self._book = contact_book()
         self._UI = user_interface()
-        self._Logger = text_logger()
-        self._JsonHandler = JsonHandler()
-        self._XMLHandler = XMLHandler()
+        self._logger = text_logger()
+        self._json_handler = _json_handler()
+        self._xml_handler = _xml_handler()
 
     def load_saved_data(self):
-        self._Logger.INFO('*Загрузка сохраненных данных*')
+        self._logger.INFO('*Загрузка сохраненных данных*')
         self.import_contacts('xml')
         # self.import_contacts('json')
 
@@ -27,39 +27,43 @@ class controller:
         return self._UI.load_menu_text()
 
     def load_print_book(self):
-        contacts = self._Book.get_sorted()
+        contacts = self._book.get_sorted()
         return self._UI.load_contacts_text_with_header(contacts)
 
     def add_contact(self, name, patronymic, surname, number):
-        self._Book.add_contact(name, patronymic, surname, number)
+        self._book.add_contact(name, patronymic, surname, number)
         answer = f'Добавлен контакт: {name} {patronymic} {surname} {number}'
-        self._Logger.INFO(answer)
+        self._logger.INFO(answer)
         return answer
 
     def delete_contact(self, id):
-        result = self._Book.delete_contact(int(id))
+        result = self._book.delete_contact(int(id))
         if result:
-            self._Logger.INFO(f'Контакт с id: {id} удален')
+            self._logger.INFO(f'Контакт с id: {id} удален')
             return f'Готово! Контакт с id: {id} удален'
         else:
-            self._Logger.WARNING(f'Ошибка при удалении контакта по id: {id}')
+            self._logger.WARNING(f'Ошибка при удалении контакта по id: {id}')
             return f'Ошибка при удалении контакта по id: {id}'
+
+    def edit_contact(self, id):
+        id = int(id)
+        if self._book
 
     def search_by_id(self, id):
         id = int(id)
-        result = self._Book.get_by_id(id)
+        result = self._book.get_by_id(id)
         if (self.check_search_result(result)):
             return self._UI.load_contact_text(result[0])
         else:
-            self._Logger.WARNING(f'Контакт с id: {id} не найден')
+            self._logger.WARNING(f'Контакт с id: {id} не найден')
             return f'Контакт с id: {id} не найден'
 
     def search_by_surname(self, surname):
-        result = self._Book.get_by_surname(surname)
+        result = self._book.get_by_surname(surname)
         if (self.check_search_result(result)):
             return self._UI.load_contacts_text(result)
         else:
-            self._Logger.WARNING(f'Контакт с фамилией: {surname} не найден')
+            self._logger.WARNING(f'Контакт с фамилией: {surname} не найден')
             return f'Контакт с фамилией: {surname} не найден'
 
     def check_search_result(self, result):
@@ -69,35 +73,35 @@ class controller:
 
     def import_contacts(self, type):
         if type == 'json':
-            self._Book.import_contact_list(self.import_contacts_from_json())
-            self._Logger.INFO("Данные из json хранилища импортированы")
+            self._book.import_contact_list(self.import_contacts_from_json())
+            self._logger.INFO("Данные из json хранилища импортированы")
         elif type == 'xml':
-            self._Book.import_contact_list(self.import_contacts_from_xml())
-            self._Logger.INFO("Данные из XML хранилища импортированы")
+            self._book.import_contact_list(self.import_contacts_from_xml())
+            self._logger.INFO("Данные из XML хранилища импортированы")
         else:
-            self._Logger.ERROR("Некорректный тип источника данных для импорта")
+            self._logger.ERROR("Некорректный тип источника данных для импорта")
         return f"Контакты из {type} хранилища успешно импортированы"
 
     def import_contacts_from_json(self):
-        return self._JsonHandler.load()
+        return self._json_handler.load()
 
     def import_contacts_from_xml(self):
-        return self._XMLHandler.load()
+        return self._xml_handler.load()
 
     def export_contacts(self, type):
         if type == 'json':
-            self.export_contacts_to_json(self._Book.get_unsorted())
-            self._Logger.INFO("Данные в json хранилище экспортированы")
+            self.export_contacts_to_json(self._book.get_unsorted())
+            self._logger.INFO("Данные в json хранилище экспортированы")
         elif type == 'xml':
-            self.export_contacts_to_xml(self._Book.get_unsorted())
-            self._Logger.INFO("Данные в XML хранилище экспортированы")
+            self.export_contacts_to_xml(self._book.get_unsorted())
+            self._logger.INFO("Данные в XML хранилище экспортированы")
         else:
-            self._Logger.ERROR(
+            self._logger.ERROR(
                 "Некорректный тип хранилища данных для экспорта")
         return f"Контакты в хранилище успешно экспортированы"
 
     def export_contacts_to_json(self, contacts):
-        return self._JsonHandler.save(contacts)
+        return self._json_handler.save(contacts)
 
     def export_contacts_to_xml(self, contacts):
-        return self._XMLHandler.save(contacts)
+        return self._xml_handler.save(contacts)
