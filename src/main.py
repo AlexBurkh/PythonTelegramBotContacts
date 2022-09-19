@@ -1,5 +1,6 @@
 from bot import bot
+import config
 
-token = ""
-_Bot = bot(token)
-_Bot.run()
+token = config.token
+_bot = bot(token)
+_bot.run()
