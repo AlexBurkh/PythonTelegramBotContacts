@@ -15,7 +15,7 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
-MENU, PRINT, ADD_NAME, ADD_PATRONYMIC, ADD_SURNAME, ADD_NUMBER, DELETE, SEARCH, IMPORT, EXPORT = range(10)
+MENU, PRINT, ADD_NAME, ADD_PATRONYMIC, ADD_SURNAME, ADD_NUMBER, EDIT_ID, EDIT_NUMBER, DELETE, SEARCH, IMPORT, EXPORT = range(12)
 
 class bot:
     __app = None
@@ -29,7 +29,7 @@ class bot:
 
     async def start(self, update : Update, context):
         self.__control.load_saved_data()
-        reply_keyboard = [['/print', '/add', '/delete', '/search', '/import', '/export', '/cancel']]
+        reply_keyboard = [['/print', '/add', '/edit', '/delete', '/search', '/import', '/export', '/cancel']]
         markup_key = ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, one_time_keyboard=False)
         await update.message.reply_text(
             'Выберите пункт меню',
@@ -77,6 +77,30 @@ class bot:
             answer = self.__control.add_contact(self.temp_data[0], self.temp_data[1], self.temp_data[2], self.temp_data[3])
             await update.message.reply_text(answer)
             self.temp_data = None
+        return MENU
+
+    # Ветка редактирования
+    async def edit(self, update: Update, context):
+        await update.message.reply_text("Введите id контакта для редактирования")
+        self.temp_data = []
+        return EDIT_ID
+
+    async def get_id_for_edit(self, update : Update, context):
+        text = self.check_text(update.message.text)
+        if text is not None:
+            self.temp_data.append(text)
+            await update.message.reply_text("Хорошо! Введите номер")
+            return EDIT_NUMBER
+        self.temp_data = None
+        return MENU
+
+    async def edit_number(self, update : Update, context):
+        text = self.check_text(update.message.text)
+        if text is not None:
+            self.temp_data.append(int(text))
+        answer = self.__control.edit_contact(self.temp_data)
+        await update.message.reply_text(answer)
+        self.temp_data = None
         return MENU
 
     # Ветка удаления
@@ -166,7 +190,8 @@ class bot:
             entry_points=[CommandHandler('start', self.start)],
             states={
                 MENU: [CommandHandler('print', self.print), 
-                       CommandHandler('add', self.add), 
+                       CommandHandler('add', self.add),
+                       CommandHandler('edit', self.edit),
                        CommandHandler('delete', self.delete),
                        CommandHandler('search', self.search),
                        CommandHandler('import', self.import_data),
@@ -175,6 +200,8 @@ class bot:
                 ADD_PATRONYMIC: [MessageHandler(filters.TEXT & (~ filters.COMMAND), self.get_patronymic)],
                 ADD_SURNAME: [MessageHandler(filters.TEXT & (~ filters.COMMAND), self.get_surname)],
                 ADD_NUMBER: [MessageHandler(filters.TEXT & (~ filters.COMMAND), self.get_number)],
+                EDIT_ID: [MessageHandler(filters.Regex('[0-9]') & (~ filters.COMMAND), self.get_id_for_edit)],
+                EDIT_NUMBER: [MessageHandler(filters.TEXT & (~ filters.COMMAND), self.edit_number)],
                 DELETE: [MessageHandler(filters.TEXT & (~ filters.COMMAND), self.remove_by_id)],
                 SEARCH: [MessageHandler(filters.Regex('[0-9]') & (~ filters.COMMAND), self.search_by_id), MessageHandler(filters.TEXT & (~ filters.COMMAND), self.search_by_surname)],
                 IMPORT: [MessageHandler(filters.Regex('json') & (~ filters.COMMAND), self.import_json), MessageHandler(filters.Regex('xml') & (~ filters.COMMAND), self.import_xml)],
